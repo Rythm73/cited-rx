@@ -1,0 +1,212 @@
+[
+  {
+    "id": "factual_001",
+    "type": "factual",
+    "question": "What is the recommended LDL-C target for high-risk patients with chronic coronary disease?",
+    "expected_answer": "An absolute LDL-C threshold of <70 mg/dL, with <55 mg/dL considered for very high-risk patients. Achieved through high-intensity statin therapy aimed at >=50% LDL-C reduction; ezetimibe added if LDL-C remains >=70 mg/dL on maximally tolerated statin.",
+    "expected_pages": [27, 18, 2]
+  },
+  {
+    "id": "factual_002",
+    "type": "factual",
+    "question": "What is the recommended blood pressure target for adults with CCD and hypertension?",
+    "expected_answer": "<130/<80 mm Hg, recommended to reduce CVD events.",
+    "expected_pages": [19]
+  },
+  {
+    "id": "factual_003",
+    "type": "factual",
+    "question": "How many performance measures and quality measures are in the 2025 AHA/ACC measure set for CCD?",
+    "expected_answer": "10 performance measures and 3 quality measures, focused on the chronic coronary disease population.",
+    "expected_pages": [1]
+  },
+  {
+    "id": "factual_004",
+    "type": "factual",
+    "question": "What is the Class of Recommendation and Level of Evidence for high-intensity statin therapy in CCD aimed at >=50% LDL-C reduction?",
+    "expected_answer": "Class 1, Level of Evidence A.",
+    "expected_pages": [18, 27]
+  },
+  {
+    "id": "factual_005",
+    "type": "factual",
+    "question": "What is the Class of Recommendation for adding ezetimibe in CCD patients with LDL-C >=70 mg/dL on maximally tolerated statin therapy?",
+    "expected_answer": "Class 2a, Level of Evidence B-R.",
+    "expected_pages": [27]
+  },
+  {
+    "id": "factual_006",
+    "type": "factual",
+    "question": "Which clinical guideline forms the basis of the 2025 performance measures?",
+    "expected_answer": "The 2023 AHA/ACC/ACCP/ASPC/NLA/PCNA Guideline for the Management of Patients With Chronic Coronary Disease.",
+    "expected_pages": [2, 3]
+  },
+  {
+    "id": "factual_007",
+    "type": "factual",
+    "question": "What is the measurement period for the medication adherence quality measure?",
+    "expected_answer": "12 months. Denominator includes patients age >=18 with a diagnosis of CCD seen within a 12-month period.",
+    "expected_pages": [28]
+  },
+  {
+    "id": "factual_008",
+    "type": "factual",
+    "question": "Who is excluded from CCD performance measures?",
+    "expected_answer": "Patients for whom the clinician determines care is inappropriate, and patients who decline treatment or care.",
+    "expected_pages": [3]
+  },
+  {
+    "id": "factual_009",
+    "type": "factual",
+    "question": "What clinical topics are covered in the 2025 CCD measure set?",
+    "expected_answer": "Tobacco use assessment and cessation, antiplatelet therapy, lipid assessment and LDL-C goals, hypertension management, reduced left ventricular dysfunction management, cardiac rehabilitation referral, and patient education including symptom management and lifestyle modification.",
+    "expected_pages": [1]
+  },
+  {
+    "id": "factual_010",
+    "type": "factual",
+    "question": "What measure set did the 2025 measures update?",
+    "expected_answer": "The ACCF/AHA/AMA-PCPI 2011 Performance Measures for Adults With Coronary Artery Disease and Hypertension.",
+    "expected_pages": [3, 7]
+  },
+  {
+    "id": "multihop_001",
+    "type": "multi_hop",
+    "question": "How do quality measures differ from performance measures, and how can a quality measure become a performance measure?",
+    "expected_answer": "Performance measures are based on strong evidence (typically Class 1 or 3 recommendations). Quality measures are used when evidence is weaker or further evaluation is needed for implementation. Over time, with more research and validation, quality measures may be promoted to performance measure status.",
+    "expected_pages": [3, 2]
+  },
+  {
+    "id": "multihop_002",
+    "type": "multi_hop",
+    "question": "How do the relative LDL-C reduction goal and the absolute LDL-C threshold relate, and when is each preferred?",
+    "expected_answer": "The relative goal (>=50% reduction) is reasonable for patients with pretherapy LDL-C <140 mg/dL. For patients with very high baseline LDL-C, an absolute threshold (<70 mg/dL) may be preferred, as relative reduction may not lead to adequate control.",
+    "expected_pages": [27, 18]
+  },
+  {
+    "id": "multihop_003",
+    "type": "multi_hop",
+    "question": "How is medication adherence both tracked as an outcome and promoted as a goal in the CCD measures?",
+    "expected_answer": "Lipid measurement (PM-3) tracks adherence and persistence with lipid-lowering therapy. Patient education (QM-3), particularly when delivered by pharmacists or nurses, is recognized as improving adherence rates.",
+    "expected_pages": [17, 28, 8]
+  },
+  {
+    "id": "multihop_004",
+    "type": "multi_hop",
+    "question": "What is the development process for new CCD performance measures, from candidate selection to finalization?",
+    "expected_answer": "Writing committees follow a defined methodology for performance measure development, ensuring alignment with ACC/AHA standards. Candidates with strong evidence (Class 1 or 3 recommendations) become performance measures; candidates with weaker evidence or implementation challenges are classified as quality measures.",
+    "expected_pages": [3]
+  },
+  {
+    "id": "multihop_005",
+    "type": "multi_hop",
+    "question": "How is the chronic coronary disease patient population defined for the purpose of these measures?",
+    "expected_answer": "Patients discharged after admission for an acute coronary syndrome or after coronary revascularization (with stabilization of acute issues), patients with left ventricular systolic dysfunction and known/suspected coronary artery disease, and patients with established cardiomyopathy.",
+    "expected_pages": [3]
+  },
+  {
+    "id": "multihop_006",
+    "type": "multi_hop",
+    "question": "What is the disease burden context for CCD that motivates the measure set?",
+    "expected_answer": "CCD is a leading cause of death in the United States with an estimated disease burden of around 20.5 million patients. Recent trends show increasing mortality rates in CCD, with higher prevalence of risk factors among racial minorities and lower-socioeconomic-status populations contributing to outcome disparities.",
+    "expected_pages": [5]
+  },
+  {
+    "id": "multihop_007",
+    "type": "multi_hop",
+    "question": "Why is cardiac rehabilitation referral included as a performance measure?",
+    "expected_answer": "Cardiac rehabilitation referral reflects expanding indications for cardiac rehabilitation and emphasizes the increasing importance of referral as part of comprehensive CCD care.",
+    "expected_pages": [1, 2]
+  },
+  {
+    "id": "multihop_008",
+    "type": "multi_hop",
+    "question": "What two patient-facing exclusions apply universally across all CCD measures, and why are they included?",
+    "expected_answer": "First, patients for whom the clinician determines care is inappropriate are excluded, preserving clinical judgment. Second, patients who decline treatment or care are excluded, respecting patient autonomy. Both exclusions apply to every measure in the set.",
+    "expected_pages": [3]
+  },
+  {
+    "id": "multihop_009",
+    "type": "multi_hop",
+    "question": "What changed between the 2011 and 2025 measure sets?",
+    "expected_answer": "Seven measures from the 2011 ACC/AHA coronary artery disease and hypertension measure set were reviewed and revised. No measures were retired in the update. The 2024 Joint Committee convened a writing committee to begin the update process.",
+    "expected_pages": [7, 3]
+  },
+  {
+    "id": "multihop_010",
+    "type": "multi_hop",
+    "question": "How does the document distinguish quality measures from measures suitable for pay-for-performance use?",
+    "expected_answer": "Quality measures are described as not yet ready for public reporting or pay-for-performance programs, but useful for quality improvement. Performance measures, by contrast, are based on strong evidence and are appropriate for accountability programs.",
+    "expected_pages": [2, 3]
+  },
+  {
+    "id": "edge_001",
+    "type": "edge_case",
+    "question": "Are patients who decline treatment counted in performance measure denominators?",
+    "expected_answer": "No. Patients who decline treatment or care are universally excluded from the denominator across all measures.",
+    "expected_pages": [3]
+  },
+  {
+    "id": "edge_002",
+    "type": "edge_case",
+    "question": "Can the 2025 quality measures be used for pay-for-performance programs?",
+    "expected_answer": "No. Quality measures are not yet ready for public reporting or pay-for-performance, though they can be useful for quality improvement.",
+    "expected_pages": [2]
+  },
+  {
+    "id": "edge_003",
+    "type": "edge_case",
+    "question": "What happens when a clinician determines that a measure's recommended care is inappropriate for a specific patient?",
+    "expected_answer": "That patient is excluded from the measure. This is a universal clinical-judgment exclusion across all measures in the set.",
+    "expected_pages": [3]
+  },
+  {
+    "id": "edge_004",
+    "type": "edge_case",
+    "question": "Does the document acknowledge that patient preferences can affect adherence to measure recommendations?",
+    "expected_answer": "Yes. The document notes that nuances in clinical practice and patient preferences can affect adherence to measures, particularly for items like imaging and patient education.",
+    "expected_pages": [8]
+  },
+  {
+    "id": "edge_005",
+    "type": "edge_case",
+    "question": "Are measures with weak evidence excluded from the measure set entirely?",
+    "expected_answer": "No. Measures where evidence is weak or further implementation evaluation is needed are not excluded but are classified as quality measures, with the possibility of promotion to performance measure status as evidence develops.",
+    "expected_pages": [3]
+  },
+  {
+    "id": "ooc_001",
+    "type": "out_of_corpus",
+    "question": "What is the capital of France?",
+    "expected_answer": "GATED - the document is about cardiovascular performance measures, not geography.",
+    "expected_pages": []
+  },
+  {
+    "id": "ooc_002",
+    "type": "out_of_corpus",
+    "question": "What is the recommended treatment for diabetic ketoacidosis?",
+    "expected_answer": "GATED - DKA is medical but outside the scope of this CCD performance measures document.",
+    "expected_pages": []
+  },
+  {
+    "id": "ooc_003",
+    "type": "out_of_corpus",
+    "question": "How do you cook spaghetti carbonara?",
+    "expected_answer": "GATED - completely off-domain.",
+    "expected_pages": []
+  },
+  {
+    "id": "ooc_004",
+    "type": "out_of_corpus",
+    "question": "What are the symptoms of seasonal allergies?",
+    "expected_answer": "GATED - outside the cardiovascular focus of the document.",
+    "expected_pages": []
+  },
+  {
+    "id": "ooc_005",
+    "type": "out_of_corpus",
+    "question": "What does the 2024 NFL season schedule look like?",
+    "expected_answer": "GATED - completely off-domain, sports schedule.",
+    "expected_pages": []
+  }
+]

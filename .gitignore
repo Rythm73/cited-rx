@@ -1,0 +1,22 @@
+# Secrets — NEVER commit
+.env
+.env.*
+
+# Virtual environment
+venv/
+
+# Python caches
+__pycache__/
+*.pyc
+
+# Data (regenerable from raw PDF; contains copyrighted text)
+data/raw/*.pdf
+data/qdrant_storage/
+
+# Ignore heavy embeddings and user uploads, but KEEP the default JSON
+data/processed/*.npy
+data/processed/user_*
+
+# Editor / OS
+.vscode/
+.DS_Store

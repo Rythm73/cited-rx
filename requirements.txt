@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+gradio
+qdrant-client
+sentence-transformers
+anthropic
+httpx
+pypdf
+python-multipart
