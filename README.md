@@ -231,8 +231,6 @@ cited-rx/
 ├── config.py               # paths, models, retrieval constants
 ├── conftest.py             # test path setup
 ├── requirements.txt
-├── read_pdf.py             # CLI: PDF -> chunks
-
 ├── backend/
 │   ├── read_pdf.py         # CLI: PDF -> chunks
 │   ├── embed_chunks.py     # CLI: chunks -> embeddings
