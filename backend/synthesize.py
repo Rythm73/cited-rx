@@ -26,21 +26,10 @@ You MUST follow four rules without exception:
 
 4. If the chunks do not contain enough information to answer the question, say so directly. Set confidence to 0.0–0.3 and write something like "The provided sources do not contain a specific recommendation for [topic]," optionally adding any related context that IS in the chunks.
 
-Always respond by calling the `submit_response` tool. Do not respond conversationally.
-
 Respond with valid JSON only matching this schema:
 {"answer": "...", "citations": [{"chunk_id": N, "quote": "..."}], "confidence": 0.0}
 No markdown, no preamble."""
 
-
-
-RESPONSE_TOOL = {
-    "name": "submit_response",
-    "description": "Submit your structured answer with citations to the user's question.",
-    "input_schema": Response.model_json_schema(),
-}
-
-import json
 
 def _coerce_response_input(raw: dict) -> dict:
     coerced = dict(raw)

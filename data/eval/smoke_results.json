@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-05-18T13:02:19.915894",
+  "timestamp": "2026-05-18T13:10:13.897204",
   "passed": 5,
   "failed": 0,
   "total": 5,
@@ -12,7 +12,7 @@
       "confidence": 0.8,
       "n_citations": 5,
       "answer_preview": "The recommended LDL cholesterol target is below 70 mg/dL [chunk_id=174][chunk_id=175], and an LDL-C below 55 mg/dL can b",
-      "latency_ms": 12425,
+      "latency_ms": 11956,
       "pass": true,
       "error": null
     },
@@ -24,7 +24,7 @@
       "confidence": 1.0,
       "n_citations": 3,
       "answer_preview": "The blood pressure target for CCD patients is <130/<80 mm Hg [chunk_id=131][chunk_id=42][chunk_id=129].",
-      "latency_ms": 4894,
+      "latency_ms": 3873,
       "pass": true,
       "error": null
     },
@@ -35,8 +35,8 @@
       "actually_refused": false,
       "confidence": 1.0,
       "n_citations": 3,
-      "answer_preview": "The class of recommendation for statin therapy is Class 1, Level of Evidence: A [chunk_id=127][chunk_id=175][chunk_id=12",
-      "latency_ms": 4399,
+      "answer_preview": "The class of recommendation for statin therapy is Class 1 [chunk_id=127][chunk_id=175][chunk_id=123], with a Level of Ev",
+      "latency_ms": 4094,
       "pass": true,
       "error": null
     },
@@ -48,7 +48,7 @@
       "confidence": 0.0,
       "n_citations": 0,
       "answer_preview": "The provided source material does not contain sufficient evidence to answer this question.",
-      "latency_ms": 3308,
+      "latency_ms": 3006,
       "pass": true,
       "error": null
     },
@@ -60,7 +60,7 @@
       "confidence": 0.0,
       "n_citations": 0,
       "answer_preview": "The provided source material does not contain sufficient evidence to answer this question.",
-      "latency_ms": 6202,
+      "latency_ms": 5332,
       "pass": true,
       "error": null
     }
