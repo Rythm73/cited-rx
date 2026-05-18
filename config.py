@@ -30,4 +30,4 @@ for _d in (DATA_DIR, QDRANT_PATH, PROCESSED_DIR, RAW_DIR, EVAL_DIR, EVAL_DIR / "
     _d.mkdir(parents=True, exist_ok=True)
 RERANKER_MODEL  = "cross-encoder/ms-marco-MiniLM-L-12-v2"
 EMBEDDING_MODEL = "BAAI/bge-m3"
-RERANKER_MODEL  = "cross-encoder/ms-marco-MiniLM-L-12-v2"
+

@@ -9,8 +9,8 @@ from backend.rerank import retrieve_with_reranker
 from backend.synthesize import synthesize_with_gate
 from backend.ingest import ingest_pdf
 from backend.state import app_state
+from config import DEFAULT_CORPUS
 
-DEFAULT_CORPUS = "cited_rx_chunks"
 DEFAULT_CORPUS_LABEL = "AHA/ACC CCD performance measures (bundled)"
 
 def query_rag(message: str, active_corpus_id: str, active_corpus_label: str) -> str:
@@ -46,8 +46,6 @@ def user_then_assistant(user_msg, history, corpus_id_val, corpus_label_val):
         history = []
     if not user_msg or not user_msg.strip():
         return "", history
-    active_id = app_state.get("active_corpus_id", corpus_id_val)
-    active_label = app_state.get("active_corpus_label", corpus_label_val)
     response = query_rag(user_msg, corpus_id_val, corpus_label_val)
     history.append({"role": "user", "content": user_msg})
     history.append({"role": "assistant", "content": response})
@@ -74,8 +72,6 @@ def handle_upload(file_obj, chat_history):
     new_corpus_id = result["corpus_id"]
     n_chunks = result["n_chunks"]
     n_pages = result["n_pages"]
-    app_state["active_corpus_id"] = new_corpus_id      
-    app_state["active_corpus_label"] = pdf_name
     chat_history.append({"role": "assistant", "content": f"✅ Indexed `{pdf_name}` — {n_chunks} chunks across {n_pages} pages. Subsequent questions will query this document."})
     yield new_corpus_id, pdf_name, f"**Active corpus:** {pdf_name}", chat_history
 
@@ -83,8 +79,6 @@ def handle_upload(file_obj, chat_history):
 def reset_to_default(chat_history):
     if chat_history is None:
         chat_history = []
-    app_state["active_corpus_id"] = DEFAULT_CORPUS          
-    app_state["active_corpus_label"] = DEFAULT_CORPUS_LABEL 
     chat_history.append({"role": "assistant", "content": f"↩ Switched back to default: {DEFAULT_CORPUS_LABEL}."})
     return (DEFAULT_CORPUS, DEFAULT_CORPUS_LABEL, f"**Active corpus:** {DEFAULT_CORPUS_LABEL}", chat_history, None)
 
