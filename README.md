@@ -232,9 +232,11 @@ cited-rx/
 ├── conftest.py             # test path setup
 ├── requirements.txt
 ├── read_pdf.py             # CLI: PDF -> chunks
-├── embed_chunks.py         # CLI: chunks -> embeddings
-├── index.py                # CLI: embeddings -> Qdrant
+
 ├── backend/
+│   ├── read_pdf.py         # CLI: PDF -> chunks
+│   ├── embed_chunks.py     # CLI: chunks -> embeddings
+│   ├── index.py            # CLI: embeddings -> Qdrant
 │   ├── api.py              # FastAPI app + Gradio mount
 │   ├── ui.py               # Gradio interface
 │   ├── pipeline.py         # end-to-end RAG orchestration
