@@ -1,0 +1,68 @@
+{
+  "timestamp": "2026-05-16T19:08:33.277975",
+  "passed": 5,
+  "failed": 0,
+  "total": 5,
+  "results": [
+    {
+      "label": "in_corpus_ldl",
+      "question": "What is the recommended LDL cholesterol target?",
+      "expected_refused": false,
+      "actually_refused": false,
+      "confidence": 0.8,
+      "n_citations": 5,
+      "answer_preview": "The recommended LDL cholesterol target is below 70 mg/dL [chunk_id=174][chunk_id=175], and an LDL-C below 55 mg/dL can b",
+      "latency_ms": 12591,
+      "pass": true,
+      "error": null
+    },
+    {
+      "label": "in_corpus_bp",
+      "question": "What is the blood pressure target for CCD patients?",
+      "expected_refused": false,
+      "actually_refused": false,
+      "confidence": 1.0,
+      "n_citations": 3,
+      "answer_preview": "The blood pressure target for CCD patients is <130/<80 mm Hg [chunk_id=131][chunk_id=42][chunk_id=129].",
+      "latency_ms": 4456,
+      "pass": true,
+      "error": null
+    },
+    {
+      "label": "in_corpus_statin",
+      "question": "What is the class of recommendation for statin therapy?",
+      "expected_refused": false,
+      "actually_refused": false,
+      "confidence": 1.0,
+      "n_citations": 3,
+      "answer_preview": "The class of recommendation for statin therapy is Class 1, Level of Evidence: A [chunk_id=127][chunk_id=175][chunk_id=12",
+      "latency_ms": 4412,
+      "pass": true,
+      "error": null
+    },
+    {
+      "label": "out_of_corpus_1",
+      "question": "What is the capital of France?",
+      "expected_refused": true,
+      "actually_refused": true,
+      "confidence": 0.0,
+      "n_citations": 0,
+      "answer_preview": "The provided source material does not contain sufficient evidence to answer this question.",
+      "latency_ms": 4443,
+      "pass": true,
+      "error": null
+    },
+    {
+      "label": "out_of_corpus_2",
+      "question": "How do you cook spaghetti carbonara?",
+      "expected_refused": true,
+      "actually_refused": true,
+      "confidence": 0.0,
+      "n_citations": 0,
+      "answer_preview": "The provided source material does not contain sufficient evidence to answer this question.",
+      "latency_ms": 7149,
+      "pass": true,
+      "error": null
+    }
+  ]
+}

@@ -2,9 +2,7 @@ from backend.retrieve import retrieve as retrieve_semantic
 from backend.retrieve_bm25 import retrieve_bm25
 from backend.schemas import RetrievedChunk
 
-RRF_K = 60
-DEFAULT_CORPUS = "cited_rx_chunks"
-
+from config import RRF_K, DEFAULT_CORPUS, QDRANT_PATH
 
 def retrieve_hybrid(
     query: str,
@@ -53,7 +51,7 @@ if __name__ == "__main__":
     from qdrant_client import QdrantClient
     
     # Initialize a local client just for the test harness
-    test_client = QdrantClient(path="./data")
+    test_client = QdrantClient(path=str(QDRANT_PATH))
 
     # Test harness unchanged — uses default corpus everywhere
     test_queries = [

@@ -1,9 +1,35 @@
-fastapi
-uvicorn
-gradio
-qdrant-client
-sentence-transformers
-anthropic
-httpx
-pypdf
-python-multipart
+# Core API & UI
+fastapi==0.136.1
+uvicorn==0.46.0
+gradio==6.14.0
+python-multipart==0.0.27
+
+# Vector DB
+qdrant-client==1.17.1
+
+# Embeddings & reranking
+sentence-transformers==4.1.0
+torch==2.2.2
+
+# LLM
+groq==0.37.1
+
+# Retrieval
+rank-bm25==0.2.2
+langchain-text-splitters==1.1.2
+
+# PDF parsing
+pypdf==6.10.2
+
+# Eval
+ragas==0.4.3
+langchain-groq==1.1.2
+langchain-core==1.3.3
+
+# Schemas & config
+pydantic==2.13.4
+python-dotenv==1.2.2
+numpy==1.26.4
+
+# Testing
+pytest==9.0.3

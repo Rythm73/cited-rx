@@ -20,36 +20,17 @@ import numpy as np
 from pypdf import PdfReader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from qdrant_client.models import VectorParams, Distance, PointStruct
-
-# Reuse the singletons from retrieve.py — Qdrant local mode allows only one
-# client per storage path, so all modules in the same process must share it.
-from backend.retrieve import _model
-
-# ──────────────────────────────────────────────────────────────
-# Constants
-# ──────────────────────────────────────────────────────────────
-PROCESSED_DIR = Path("/root/data/processed")
-DEFAULT_CORPUS = "cited_rx_chunks"
-
-CHUNK_SIZE = 1000
-CHUNK_OVERLAP = 200
-EMBEDDING_DIM = 1024
+from backend.retrieve import _get_model
 
 
-# ──────────────────────────────────────────────────────────────
-# Path helpers — keep filesystem naming consistent across modules
-# ──────────────────────────────────────────────────────────────
+from config import PROCESSED_DIR, DEFAULT_CORPUS, CHUNK_SIZE, CHUNK_OVERLAP, EMBEDDING_DIM
+
+
 def chunks_path(corpus_id: str) -> Path:
     return PROCESSED_DIR / f"{corpus_id}_chunks.json"
-
-
 def embeddings_path(corpus_id: str) -> Path:
     return PROCESSED_DIR / f"{corpus_id}_embeddings.npy"
 
-
-# ──────────────────────────────────────────────────────────────
-# Stage 1: PDF → chunks with metadata
-# ──────────────────────────────────────────────────────────────
 def chunk_pdf(pdf_path: str, source_doc: Optional[str] = None) -> list[dict]:
     """Read PDF, clean per-page text, split into overlapping chunks with metadata.
 
@@ -65,8 +46,8 @@ def chunk_pdf(pdf_path: str, source_doc: Optional[str] = None) -> list[dict]:
     pages = []
     for page_num, page in enumerate(reader.pages, start=1):
         text = page.extract_text() or ""
-        text = re.sub(r"[ \t]+", " ", text)      # collapse spaces/tabs, keep newlines
-        text = re.sub(r"\n{3,}", "\n\n", text)   # cap paragraph breaks at 2
+        text = re.sub(r"[ \t]+", " ", text)     
+        text = re.sub(r"\n{3,}", "\n\n", text)   
         text = text.strip()
         if text:
             pages.append({"page_number": page_num, "text": text})
@@ -77,7 +58,6 @@ def chunk_pdf(pdf_path: str, source_doc: Optional[str] = None) -> list[dict]:
             f"Likely a scanned/image-only PDF — OCR would be required."
         )
 
-    # Smart chunking — splitter respects paragraphs > lines > sentences > words
     splitter = RecursiveCharacterTextSplitter(
         chunk_size=CHUNK_SIZE,
         chunk_overlap=CHUNK_OVERLAP,
@@ -100,27 +80,22 @@ def chunk_pdf(pdf_path: str, source_doc: Optional[str] = None) -> list[dict]:
     return chunks
 
 
-# ──────────────────────────────────────────────────────────────
-# Stage 2: chunks → embeddings
-# ──────────────────────────────────────────────────────────────
 def embed_chunks(chunks: list[dict]) -> np.ndarray:
     """Embed chunk texts in chunk_id order. Returns (N, 1024) normalized float array."""
     chunks_sorted = sorted(chunks, key=lambda c: c["chunk_id"])
     texts = [c["text"] for c in chunks_sorted]
 
-    embeddings = _model.encode(
+    embeddings = _get_model().encode(
         texts,
         batch_size=16,
         show_progress_bar=True,
-        normalize_embeddings=True,  # so cosine similarity = dot product
+        normalize_embeddings=True, 
         convert_to_numpy=True,
     )
     return embeddings
 
 
-# ──────────────────────────────────────────────────────────────
-# Stage 3: chunks + embeddings → Qdrant collection
-# ──────────────────────────────────────────────────────────────
+
 def index_chunks(corpus_id: str, chunks: list[dict], embeddings: np.ndarray,qdrant_client) -> None:
     """Create (or recreate) Qdrant collection named {corpus_id} and upload all points.
 
@@ -155,10 +130,6 @@ def index_chunks(corpus_id: str, chunks: list[dict], embeddings: np.ndarray,qdra
     ]
     qdrant_client.upsert(collection_name=corpus_id, points=points)
 
-
-# ──────────────────────────────────────────────────────────────
-# Public orchestrator — used by the API and the CLI smoke test
-# ──────────────────────────────────────────────────────────────
 
 def ingest_pdf(
     pdf_path: str,
@@ -221,6 +192,7 @@ if __name__ == "__main__":
     parser.add_argument("--corpus", default=None,
                         help="Corpus id (default: auto-generated UUID-based id)")
     args = parser.parse_args()
-    test_client = QdrantClient(path="/Users/gowthamir/cited-rx/data/qdrant_storage")
+    from config import QDRANT_PATH
+    test_client = QdrantClient(path=str(QDRANT_PATH))
     result = ingest_pdf(args.pdf,qdrant_client=test_client,corpus_id=args.corpus)
     print(f"\n[ingest] Done: {result}")

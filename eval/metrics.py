@@ -25,10 +25,7 @@ from pathlib import Path
 from typing import Any
 
 
-def score_ragas(
-    records: list[dict[str, Any]],
-    judge_model: str = "claude-sonnet-4-6",
-) -> list[dict[str, Any]]:
+def score_ragas(records, judge_model: str = "llama3-8b-8192") -> list[dict[str, Any]]:
     """Run Ragas metrics on eligible records (non-refused, non-error, in-corpus)."""
     from ragas import evaluate
     from ragas.dataset_schema import EvaluationDataset, SingleTurnSample
@@ -39,7 +36,7 @@ def score_ragas(
     )
     from ragas.llms import LangchainLLMWrapper
     from ragas.run_config import RunConfig
-    from langchain_anthropic import ChatAnthropic
+    from langchain_groq import ChatGroq
 
     eligible = [
         (i, r) for i, r in enumerate(records)
@@ -69,8 +66,7 @@ def score_ragas(
     eval_dataset = EvaluationDataset(samples=samples)
 
     judge = LangchainLLMWrapper(
-        ChatAnthropic(model=judge_model, temperature=0, max_tokens=2048)
-    )
+    ChatGroq(model=judge_model, temperature=0, max_tokens=2048))
 
     metrics = [
         Faithfulness(llm=judge),
@@ -167,7 +163,7 @@ def main():
     parser = argparse.ArgumentParser(description="Score a run with Ragas metrics.")
     parser.add_argument("--run", type=Path, required=True, help="Run JSON from runner.py")
     parser.add_argument("--out", type=Path, default=None)
-    parser.add_argument("--judge-model", default="claude-sonnet-4-6")
+    parser.add_argument("--judge-model", default="llama3-8b-8192")
     args = parser.parse_args()
 
     if not args.run.exists():

@@ -1,28 +1,30 @@
+from functools import lru_cache
+
 from sentence_transformers import SentenceTransformer
 from qdrant_client import QdrantClient
 from backend.schemas import RetrievedChunk
+from config import DEFAULT_CORPUS, EMBEDDING_MODEL
 
-DEFAULT_CORPUS = "cited_rx_chunks"
-MODEL_NAME = "BAAI/bge-m3"
+MODEL_NAME = EMBEDDING_MODEL
 
-print("Loading retrieve.py: BGE-M3 model...")
-# Keep the model global, that is perfectly fine for Modal!
-_model = SentenceTransformer(MODEL_NAME)
-print(f"Loaded. Model device: {_model.device}")
 
-# 🚨 DELETED THE GLOBAL _client HERE 🚨
-
+@lru_cache(maxsize=1)
+def _get_model() -> SentenceTransformer:
+    """Load BGE-M3 once, on first call. Cached for the process lifetime."""
+    print("Loading retrieve.py: BGE-M3 model...")
+    model = SentenceTransformer(MODEL_NAME)
+    print(f"Loaded. Model device: {model.device}")
+    return model
 
 def retrieve(
     query: str,
-    qdrant_client,  # <--- We pass the client from the API lifespan
+    qdrant_client, 
     top_k: int = 5,
     corpus_id: str = DEFAULT_CORPUS,
 ) -> list[RetrievedChunk]:
     """Embed query, search Qdrant collection `corpus_id`, return top-k chunks."""
-    query_vec = _model.encode(query, normalize_embeddings=True).tolist()
+    query_vec = _get_model().encode(query, normalize_embeddings=True).tolist()
     
-    # 🚨 Use the passed 'qdrant_client' instead of the global '_client'
     results = qdrant_client.query_points(
         collection_name=corpus_id,
         query=query_vec,
@@ -43,10 +45,9 @@ def retrieve(
 
 
 if __name__ == "__main__":
-    # Test harness unchanged — uses default corpus
-    QDRANT_PATH = "/root/data/qdrant_storage"
-    
-    # Initialize a local client ONLY for the test harness
+
+    from config import QDRANT_PATH
+
     test_client = QdrantClient(path=QDRANT_PATH)
     
     test_queries = [

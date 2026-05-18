@@ -113,7 +113,7 @@ with gr.Blocks(title="cited-rx") as demo:
 
     corpus_status = gr.Markdown(f"**Active corpus:** {DEFAULT_CORPUS_LABEL}")
 
-    chatbot = gr.Chatbot(label="Conversation", height=300, type="messages")
+    chatbot = gr.Chatbot(label="Conversation", height=300)
     msg = gr.Textbox(
         label="Your question",
         placeholder="Ask about the active corpus...",

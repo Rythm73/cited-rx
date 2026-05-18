@@ -1,16 +1,13 @@
 """CLI: chunk a PDF and save chunks.json for a corpus."""
 import argparse
 import json
-from ingest import chunk_pdf, chunks_path, DEFAULT_CORPUS
+from backend.ingest import chunk_pdf, chunks_path
+from config import DEFAULT_CORPUS, RAW_DIR
 
 
 def main():
     parser = argparse.ArgumentParser(description="Chunk a PDF and save chunks.json.")
-    parser.add_argument(
-        "--pdf",
-        default="/Users/gowthamir/cited-rx/data/raw/guideline.pdf",
-        help="Path to source PDF",
-    )
+    parser.add_argument("--pdf", default=str(RAW_DIR / "guideline.pdf"),help="Path to source PDF")
     parser.add_argument(
         "--corpus",
         default=DEFAULT_CORPUS,

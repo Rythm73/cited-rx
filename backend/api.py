@@ -16,7 +16,7 @@ from backend.rerank import retrieve_with_reranker
 from backend.synthesize import synthesize_with_gate
 from backend.ingest import ingest_pdf
 from backend.ui import demo
-
+from config import QDRANT_PATH
 
 
 # ─── Lifespan ─────────────────────────────────────────────────────────
@@ -24,8 +24,7 @@ from backend.ui import demo
 async def lifespan(app: FastAPI):
     print("Starting app: Initializing Qdrant...")
     # 1. Initialize Qdrant ONLY here.
-    # Replace path with your actual DB path (e.g., "/root/data" on Modal)
-    app_state["qdrant"] = QdrantClient(path="/root/data/qdrant_storage")
+    app_state["qdrant"] = QdrantClient(path=str(QDRANT_PATH))
     
     yield # App runs here
     

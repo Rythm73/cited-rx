@@ -3,9 +3,8 @@ import re
 from rank_bm25 import BM25Okapi
 from backend.schemas import RetrievedChunk
 
-CHUNKS_DIR = "/root/data/processed"
-DEFAULT_CORPUS = "cited_rx_chunks"
-
+from config import PROCESSED_DIR, DEFAULT_CORPUS
+CHUNKS_DIR = str(PROCESSED_DIR)
 
 def _tokenize(text: str) -> list[str]:
     """Lowercase, strip most punctuation, keep hyphens, whitespace-split.

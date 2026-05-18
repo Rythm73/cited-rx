@@ -1,14 +1,18 @@
+from functools import lru_cache
+
 from sentence_transformers import CrossEncoder
 from backend.schemas import RetrievedChunk
 from backend.retrieve_hybrid import retrieve_hybrid
+from config import RERANKER_MODEL, DEFAULT_CORPUS, QDRANT_PATH
 
-RERANKER_MODEL = "cross-encoder/ms-marco-MiniLM-L-12-v2"
-DEFAULT_CORPUS = "cited_rx_chunks"
 
-print(f"Loading rerank.py: {RERANKER_MODEL} (~600MB on first run)...")
-_reranker = CrossEncoder(RERANKER_MODEL, max_length=512)
-print(f"Loaded reranker. Device: {_reranker.model.device}")
-
+@lru_cache(maxsize=1)
+def _get_reranker() -> CrossEncoder:
+    """Load the cross-encoder once, on first call. Cached for the process lifetime."""
+    print(f"Loading rerank.py: {RERANKER_MODEL} (~600MB on first run)...")
+    reranker = CrossEncoder(RERANKER_MODEL, max_length=512)
+    print(f"Loaded reranker. Device: {reranker.model.device}")
+    return reranker
 
 def rerank(query: str, candidates: list[RetrievedChunk]) -> list[RetrievedChunk]:
     """Re-score candidates with the cross-encoder, return sorted by descending relevance."""
@@ -16,7 +20,7 @@ def rerank(query: str, candidates: list[RetrievedChunk]) -> list[RetrievedChunk]
         return []
 
     pairs = [(query, c.text) for c in candidates]
-    scores = _reranker.predict(pairs)
+    scores = _get_reranker().predict(pairs)
 
     rescored = [
         RetrievedChunk(
@@ -48,7 +52,8 @@ def retrieve_with_reranker(
 if __name__ == "__main__":
 
     from qdrant_client import QdrantClient
-    test_client = QdrantClient(path="/Users/gowthamir/cited-rx/data/qdrant_storage")
+    test_client = QdrantClient(path=str(QDRANT_PATH))
+
     # Test harness unchanged
     test_queries = [
         "What are performance measures for cardiovascular care?",

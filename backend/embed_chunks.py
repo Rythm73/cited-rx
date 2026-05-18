@@ -3,7 +3,7 @@ import argparse
 import json
 import numpy as np
 from backend.ingest import embed_chunks, chunks_path, embeddings_path, DEFAULT_CORPUS
-from backend.retrieve import _model  # for the sanity check below
+from backend.retrieve import _get_model  # for the sanity check below
 
 
 def main():
@@ -31,7 +31,7 @@ def main():
     print("\n--- Sanity check: top-3 chunks for a test query ---")
     chunks_sorted = sorted(chunks, key=lambda c: c["chunk_id"])
     test_query = "What are performance measures for cardiovascular care?"
-    query_vec = _model.encode(test_query, normalize_embeddings=True)
+    query_vec = _get_model().encode(test_query, normalize_embeddings=True)
     sims = embeddings @ query_vec
     for rank, idx in enumerate(np.argsort(sims)[::-1][:3], 1):
         c = chunks_sorted[idx]
