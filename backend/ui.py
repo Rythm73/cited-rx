@@ -3,10 +3,9 @@ os.environ["GRADIO_TEMP_DIR"] = "/tmp"
 
 import gradio as gr
 from pathlib import Path
-import re
 
 from backend.rerank import retrieve_with_reranker
-from backend.synthesize import synthesize_with_gate
+from backend.synthesize import synthesize_with_gate, render_answer_with_pages
 from backend.ingest import ingest_pdf
 from backend.state import app_state
 from config import DEFAULT_CORPUS
@@ -24,18 +23,7 @@ def query_rag(message: str, active_corpus_id: str, active_corpus_label: str) -> 
         response = synthesize_with_gate(message, chunks, threshold=0.0)
         confidence_pct = int(response.confidence * 100)
         output = f"**Confidence: {confidence_pct}%** *(querying: {active_corpus_label})*\n\n"
-        chunk_to_page = {c.chunk_id: c.page_number for c in chunks}
-        rendered_answer = re.sub(
-            r"\[chunk_id=(\d+)\]",
-            lambda m: f"(p. {chunk_to_page.get(int(m.group(1)), '?')})",
-            response.answer,
-        )
-        output += rendered_answer + "\n"
-        if response.citations:
-            output += "\n---\n\n**Sources:**\n\n"
-            for c in response.citations:
-                page = chunk_to_page.get(c.chunk_id, 0)
-                output += f"- **p. {page}** (chunk {c.chunk_id}): \"{c.quote}\"\n"
+        output += render_answer_with_pages(response, chunks) + "\n"
         return output
     except Exception as e:
         return f"Unexpected error: {type(e).__name__}: {e}"

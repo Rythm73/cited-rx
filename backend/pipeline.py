@@ -1,8 +1,9 @@
-import re
+
 from dataclasses import dataclass
 from qdrant_client import QdrantClient
 from config import DEFAULT_CORPUS, QDRANT_PATH
 from backend.schemas import Citation, RetrievedChunk
+from backend.synthesize import render_answer_with_pages
 
 @dataclass
 class PipelineResult:
@@ -41,11 +42,7 @@ def run_pipeline(
     refused_flag = response.confidence == 0.0 and not response.citations
 
     chunk_to_page = {c.chunk_id: c.page_number for c in chunks}
-    rendered = re.sub(
-        r"\[chunk_id=(\d+)\]",
-        lambda m: f"(p. {chunk_to_page.get(int(m.group(1)), '?')})",
-        response.answer,
-    )
+    rendered = render_answer_with_pages(response, chunks)
 
     return PipelineResult(
         question=question,

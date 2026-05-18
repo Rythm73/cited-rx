@@ -1,7 +1,6 @@
 import os
 os.environ["TOKENIZERS_PARALLELISM"] = "false"  # silence the fork warning
 
-import re
 import tempfile
 import asyncio
 from contextlib import asynccontextmanager
@@ -13,7 +12,7 @@ from qdrant_client import QdrantClient
 
 # Assume you update these functions to accept a 'qdrant_client' argument
 from backend.rerank import retrieve_with_reranker
-from backend.synthesize import synthesize_with_gate
+from backend.synthesize import synthesize_with_gate, render_answer_with_pages
 from backend.ingest import ingest_pdf
 from backend.ui import demo
 from config import QDRANT_PATH
@@ -87,21 +86,15 @@ def query_grounded(req: QueryRequest) -> QueryResponse:
 
     response = synthesize_with_gate(req.question, chunks, threshold=req.threshold)
 
-    chunk_to_page = {c.chunk_id: c.page_number for c in chunks}
-    rendered_answer = re.sub(
-        r"\[chunk_id=(\d+)\]",
-        lambda m: f"(p. {chunk_to_page.get(int(m.group(1)), '?')})",
-        response.answer,
-    )
-
+    rendered_answer = render_answer_with_pages(response, chunks)
     citations_with_pages = [
-        CitationWithPage(
-            chunk_id=c.chunk_id,
-            page_number=chunk_to_page.get(c.chunk_id, 0),
-            quote=c.quote,
-        )
-        for c in response.citations
-    ]
+    CitationWithPage(
+        chunk_id=c.chunk_id,
+        page_number=c.page_number,
+        quote=c.quote,
+    )
+    for c in response.citations
+]
 
     return QueryResponse(
         answer=rendered_answer,
