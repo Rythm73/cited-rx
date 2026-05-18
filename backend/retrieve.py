@@ -43,6 +43,15 @@ def retrieve(
         for p in results
     ]
 
+def get_top_semantic_score(
+    query: str,
+    qdrant_client,
+    corpus_id: str = DEFAULT_CORPUS,
+) -> float:
+    """Return the cosine similarity score of the single top semantic match.
+    Used by the confidence gate to decide whether to answer or refuse."""
+    results = retrieve(query, qdrant_client=qdrant_client, top_k=1, corpus_id=corpus_id)
+    return results[0].score if results else 0.0
 
 if __name__ == "__main__":
 

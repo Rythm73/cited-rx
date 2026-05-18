@@ -74,8 +74,9 @@ def synthesize_with_gate(
     query: str,
     chunks: list[RetrievedChunk],
     threshold: float = 0.0,
+    top_semantic_score: float = 1.0,
 ) -> Response:
-    if not chunks or chunks[0].score < threshold:
+    if not chunks or top_semantic_score < threshold:
         return NO_EVIDENCE_RESPONSE
     return synthesize(query, chunks)
 

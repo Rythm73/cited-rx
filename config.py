@@ -24,6 +24,7 @@ CHUNK_SIZE     = 1000
 CHUNK_OVERLAP  = 200
 EMBEDDING_DIM  = 1024
 RRF_K          = 60
+SIMILARITY_THRESHOLD = 0.50
 
 # ── Create local directories on first run ─────────────────────────────
 for _d in (DATA_DIR, QDRANT_PATH, PROCESSED_DIR, RAW_DIR, EVAL_DIR, EVAL_DIR / "runs"):

@@ -1,9 +1,10 @@
 
 from dataclasses import dataclass
 from qdrant_client import QdrantClient
-from config import DEFAULT_CORPUS, QDRANT_PATH
+from config import DEFAULT_CORPUS, QDRANT_PATH, SIMILARITY_THRESHOLD
 from backend.schemas import Citation, RetrievedChunk
 from backend.synthesize import render_answer_with_pages, verify_citations
+from backend.retrieve import get_top_semantic_score
 
 @dataclass
 class PipelineResult:
@@ -15,17 +16,20 @@ class PipelineResult:
     retrieved_chunks: list[RetrievedChunk]
     refused: bool
     citation_verification_rate: float
+    top_semantic_score: float
 
 def run_pipeline(
     question: str,
     qdrant_client: QdrantClient,
     top_k: int = 5,
-    threshold: float = 0.0,
+    threshold: float = SIMILARITY_THRESHOLD,
     use_reranker: bool = True,
     use_gate: bool = True,
     corpus_id: str = DEFAULT_CORPUS,
 ) -> PipelineResult:
     """End-to-end grounded RAG with togglable components for ablations."""
+    top_sem_score = get_top_semantic_score(question, qdrant_client=qdrant_client, corpus_id=corpus_id)
+
     if use_reranker:
         from backend.rerank import retrieve_with_reranker
         chunks = retrieve_with_reranker(question, qdrant_client=qdrant_client, top_k=top_k, corpus_id=corpus_id)
@@ -35,7 +39,7 @@ def run_pipeline(
 
     if use_gate:
         from backend.synthesize import synthesize_with_gate
-        response = synthesize_with_gate(question, chunks, threshold=threshold)
+        response = synthesize_with_gate(question, chunks, threshold=threshold, top_semantic_score=top_sem_score)
     else:
         from backend.synthesize import synthesize
         response = synthesize(question, chunks)
@@ -59,6 +63,7 @@ def run_pipeline(
         retrieved_chunks=chunks,
         refused=refused_flag,
         citation_verification_rate=verification_rate,
+        top_semantic_score=top_sem_score,
     )
 
 if __name__ == "__main__":
