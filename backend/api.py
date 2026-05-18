@@ -5,7 +5,7 @@ import tempfile
 import asyncio
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, File, UploadFile, HTTPException, Request
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 import gradio as gr
 from backend.state import app_state
 from qdrant_client import QdrantClient
@@ -45,9 +45,9 @@ app = FastAPI(
 # ─── Request/response models ──────────────────────────────────────────
 class QueryRequest(BaseModel):
     question: str
-    top_k: int = 5
-    threshold: float = 0.0
-    corpus_id: str = "cited_rx_chunks"
+    top_k: int = Field(default=5, ge=1, le=20)
+    threshold: float = Field(default=0.0, ge=0.0, le=1.0)
+    corpus_id: str = Field(default="cited_rx_chunks", pattern=r"^[a-zA-Z0-9_-]+$")
 
 class CitationWithPage(BaseModel):
     chunk_id: int
@@ -76,13 +76,35 @@ def health():
 def query_grounded(req: QueryRequest) -> QueryResponse:
     client = app_state["qdrant"]
 
-    result = run_pipeline(
-        req.question,
-        qdrant_client=client,
-        top_k=req.top_k,
-        threshold=req.threshold,
-        corpus_id=req.corpus_id,
-    )
+    # 404 for unknown corpus
+    try:
+        client.get_collection(req.corpus_id)
+    except Exception:
+        raise HTTPException(status_code=404, detail=f"Corpus '{req.corpus_id}' not found.")
+
+    try:
+        result = run_pipeline(
+            req.question,
+            qdrant_client=client,
+            top_k=req.top_k,
+            threshold=req.threshold,
+            corpus_id=req.corpus_id,
+        )
+    except Exception as e:
+        # Never leak a stack trace — fall back to no-evidence response
+        from backend.synthesize import NO_EVIDENCE_RESPONSE
+        from backend.pipeline import PipelineResult
+        result = PipelineResult(
+            question=req.question,
+            raw_answer=NO_EVIDENCE_RESPONSE.answer,
+            rendered_answer=NO_EVIDENCE_RESPONSE.answer,
+            confidence=0.0,
+            citations=[],
+            retrieved_chunks=[],
+            refused=True,
+            citation_verification_rate=1.0,
+            top_semantic_score=0.0,
+        )
 
     citations_with_pages = [
         CitationWithPage(
