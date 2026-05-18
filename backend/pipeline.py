@@ -41,7 +41,7 @@ def run_pipeline(
 
     refused_flag = response.confidence == 0.0 and not response.citations
 
-    chunk_to_page = {c.chunk_id: c.page_number for c in chunks}
+    
     rendered = render_answer_with_pages(response, chunks)
 
     return PipelineResult(

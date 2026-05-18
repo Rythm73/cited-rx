@@ -11,8 +11,7 @@ from backend.state import app_state
 from qdrant_client import QdrantClient
 
 # Assume you update these functions to accept a 'qdrant_client' argument
-from backend.rerank import retrieve_with_reranker
-from backend.synthesize import synthesize_with_gate, render_answer_with_pages
+from backend.pipeline import run_pipeline
 from backend.ingest import ingest_pdf
 from backend.ui import demo
 from config import QDRANT_PATH
@@ -73,32 +72,28 @@ def health():
 
 @app.post("/query/grounded", response_model=QueryResponse)
 def query_grounded(req: QueryRequest) -> QueryResponse:
-    # Retrieve the active client
     client = app_state["qdrant"]
-    
-    # Pass the client to your worker function
-    chunks = retrieve_with_reranker(
+
+    result = run_pipeline(
         req.question,
+        qdrant_client=client,
         top_k=req.top_k,
+        threshold=req.threshold,
         corpus_id=req.corpus_id,
-        qdrant_client=client # <--- Pass it down
     )
 
-    response = synthesize_with_gate(req.question, chunks, threshold=req.threshold)
-
-    rendered_answer = render_answer_with_pages(response, chunks)
     citations_with_pages = [
-    CitationWithPage(
-        chunk_id=c.chunk_id,
-        page_number=c.page_number,
-        quote=c.quote,
-    )
-    for c in response.citations
-]
+        CitationWithPage(
+            chunk_id=c.chunk_id,
+            page_number=c.page_number,
+            quote=c.quote,
+        )
+        for c in result.citations
+    ]
 
     return QueryResponse(
-        answer=rendered_answer,
-        confidence=response.confidence,
+        answer=result.rendered_answer,
+        confidence=result.confidence,
         citations=citations_with_pages,
     )
 

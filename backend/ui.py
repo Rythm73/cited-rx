@@ -4,8 +4,7 @@ os.environ["GRADIO_TEMP_DIR"] = "/tmp"
 import gradio as gr
 from pathlib import Path
 
-from backend.rerank import retrieve_with_reranker
-from backend.synthesize import synthesize_with_gate, render_answer_with_pages
+from backend.pipeline import run_pipeline
 from backend.ingest import ingest_pdf
 from backend.state import app_state
 from config import DEFAULT_CORPUS
@@ -19,15 +18,13 @@ def query_rag(message: str, active_corpus_id: str, active_corpus_label: str) -> 
         client = app_state.get("qdrant")
         if not client:
             return "Database connection is not ready yet."
-        chunks = retrieve_with_reranker(message, qdrant_client=client, top_k=5, corpus_id=active_corpus_id)
-        response = synthesize_with_gate(message, chunks, threshold=0.0)
-        confidence_pct = int(response.confidence * 100)
+        result = run_pipeline(message, qdrant_client=client, top_k=5, corpus_id=active_corpus_id)
+        confidence_pct = int(result.confidence * 100)
         output = f"**Confidence: {confidence_pct}%** *(querying: {active_corpus_label})*\n\n"
-        output += render_answer_with_pages(response, chunks) + "\n"
+        output += result.rendered_answer + "\n"
         return output
     except Exception as e:
         return f"Unexpected error: {type(e).__name__}: {e}"
-
 
 def user_then_assistant(user_msg, history, corpus_id_val, corpus_label_val):
     if history is None:

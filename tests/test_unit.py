@@ -378,3 +378,32 @@ class TestGoldStandard:
     def test_no_duplicate_ids(self, gold):
         ids = [item["id"] for item in gold]
         assert len(ids) == len(set(ids)), "Duplicate IDs found in gold set"
+
+
+class TestNoDriftFromPipeline:
+    """Guard: api.py and ui.py must never call retrieve_with_reranker or synthesize directly.
+    If this test fails, someone has bypassed run_pipeline and the eval path has diverged."""
+
+    def _read(self, filename: str) -> str:
+        path = __file__  # tests/test_unit.py
+        import pathlib
+        root = pathlib.Path(__file__).parent.parent
+        return (root / filename).read_text()
+
+    def test_api_does_not_call_retrieve_with_reranker(self):
+        src = self._read("backend/api.py")
+        assert "retrieve_with_reranker" not in src
+
+    def test_api_does_not_call_synthesize_directly(self):
+        src = self._read("backend/api.py")
+        assert "synthesize_with_gate" not in src
+        assert "synthesize(" not in src
+
+    def test_ui_does_not_call_retrieve_with_reranker(self):
+        src = self._read("backend/ui.py")
+        assert "retrieve_with_reranker" not in src
+
+    def test_ui_does_not_call_synthesize_directly(self):
+        src = self._read("backend/ui.py")
+        assert "synthesize_with_gate" not in src
+        assert "synthesize(" not in src
