@@ -20,3 +20,5 @@ data/processed/user_*
 # Editor / OS
 .vscode/
 .DS_Store
+data/eval/smoke_results.json
+data/eval/smoke_results.json
