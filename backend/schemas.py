@@ -12,6 +12,7 @@ class RetrievedChunk:
 class Citation(BaseModel):
     chunk_id: int = Field(description="ID of the chunk this citation references")
     quote: str = Field(description="The exact span from the chunk that supports the claim")
+    verified: bool = Field(default=False, description="True if the quote was found verbatim in the source chunk")
 
 
 class Response(BaseModel):

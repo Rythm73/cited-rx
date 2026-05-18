@@ -407,3 +407,43 @@ class TestNoDriftFromPipeline:
         src = self._read("backend/ui.py")
         assert "synthesize_with_gate" not in src
         assert "synthesize(" not in src
+
+
+class TestCitationVerification:
+    def _make_chunks(self, *pairs):
+        from backend.schemas import RetrievedChunk
+        return [
+            RetrievedChunk(chunk_id=cid, page_number=1, text=text, score=1.0, source_doc="test.pdf")
+            for cid, text in pairs
+        ]
+
+    def test_exact_quote_verifies(self):
+        from backend.schemas import Citation
+        from backend.synthesize import verify_citations
+        chunks = self._make_chunks((1, "The LDL-C target is less than 70 mg/dL for high-risk patients."))
+        citations = [Citation(chunk_id=1, quote="LDL-C target is less than 70 mg/dL")]
+        result = verify_citations(citations, chunks)
+        assert result[0].verified is True
+
+    def test_hallucinated_quote_fails(self):
+        from backend.schemas import Citation
+        from backend.synthesize import verify_citations
+        chunks = self._make_chunks((1, "The LDL-C target is less than 70 mg/dL for high-risk patients."))
+        citations = [Citation(chunk_id=1, quote="LDL target is under 50 mg/dL")]
+        result = verify_citations(citations, chunks)
+        assert result[0].verified is False
+
+    def test_unknown_chunk_id_fails(self):
+        from backend.schemas import Citation
+        
+        from backend.synthesize import verify_citations
+        chunks = self._make_chunks((1, "Some text here."))
+        citations = [Citation(chunk_id=999, quote="Some text here.")]
+        result = verify_citations(citations, chunks)
+        assert result[0].verified is False
+
+    def test_empty_citations_returns_empty(self):
+        from backend.synthesize import verify_citations
+        chunks = self._make_chunks((1, "Some text."))
+        result = verify_citations([], chunks)
+        assert result == []

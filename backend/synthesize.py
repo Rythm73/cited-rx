@@ -98,6 +98,20 @@ def render_answer_with_pages(response: Response, chunks: list[RetrievedChunk]) -
     ]
     return f"{rendered}\n\nSources:\n" + "\n".join(sources)
 
+# ── Citation Verification ─────────────────────────────────────
+def verify_citations(
+    citations: list,
+    chunks: list[RetrievedChunk],
+) -> list:
+    """Return citations with verified=True if the quote appears verbatim in the source chunk."""
+    chunk_text = {c.chunk_id: c.text for c in chunks}
+    verified = []
+    for citation in citations:
+        text = chunk_text.get(citation.chunk_id, "")
+        is_verified = citation.quote in text
+        verified.append(citation.model_copy(update={"verified": is_verified}))
+    return verified
+
 # ── __main__ ──────────────────────────────────────────────────
 if __name__ == "__main__":
     from backend.rerank import retrieve_with_reranker

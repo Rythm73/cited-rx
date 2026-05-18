@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from qdrant_client import QdrantClient
 from config import DEFAULT_CORPUS, QDRANT_PATH
 from backend.schemas import Citation, RetrievedChunk
-from backend.synthesize import render_answer_with_pages
+from backend.synthesize import render_answer_with_pages, verify_citations
 
 @dataclass
 class PipelineResult:
@@ -14,6 +14,7 @@ class PipelineResult:
     citations: list[Citation]
     retrieved_chunks: list[RetrievedChunk]
     refused: bool
+    citation_verification_rate: float
 
 def run_pipeline(
     question: str,
@@ -41,7 +42,12 @@ def run_pipeline(
 
     refused_flag = response.confidence == 0.0 and not response.citations
 
-    
+    verified_citations = verify_citations(response.citations, chunks)
+    if verified_citations:
+        verification_rate = sum(1 for c in verified_citations if c.verified) / len(verified_citations)
+    else:
+        verification_rate = 1.0  # no citations to verify — not a failure
+
     rendered = render_answer_with_pages(response, chunks)
 
     return PipelineResult(
@@ -49,9 +55,10 @@ def run_pipeline(
         raw_answer=response.answer,
         rendered_answer=rendered,
         confidence=response.confidence,
-        citations=response.citations,
+        citations=verified_citations,
         retrieved_chunks=chunks,
         refused=refused_flag,
+        citation_verification_rate=verification_rate,
     )
 
 if __name__ == "__main__":
