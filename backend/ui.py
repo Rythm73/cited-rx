@@ -20,9 +20,13 @@ def query_rag(message: str, active_corpus_id: str, active_corpus_label: str) -> 
             return "Database connection is not ready yet."
         result = run_pipeline(message, qdrant_client=client, top_k=5, corpus_id=active_corpus_id)
         confidence_pct = int(result.confidence * 100)
-        output = f"**Confidence: {confidence_pct}%** *(querying: {active_corpus_label})*\n\n"
+        if result.refused:
+            output = f"⚠️ **Refused** *(out of corpus — confidence: {confidence_pct}%)*\n\n"
+        else:
+            output = f"**Confidence: {confidence_pct}%** *(querying: {active_corpus_label})*\n\n"
         output += result.rendered_answer + "\n"
         return output
+        
     except Exception as e:
         return f"Unexpected error: {type(e).__name__}: {e}"
 

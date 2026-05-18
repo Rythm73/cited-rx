@@ -58,6 +58,7 @@ class QueryResponse(BaseModel):
     answer: str
     confidence: float
     citations: list[CitationWithPage]
+    refused: bool
 
 class UploadResponse(BaseModel):
     corpus_id: str
@@ -95,6 +96,7 @@ def query_grounded(req: QueryRequest) -> QueryResponse:
         answer=result.rendered_answer,
         confidence=result.confidence,
         citations=citations_with_pages,
+        refused=result.refused,
     )
 
 @app.post("/upload", response_model=UploadResponse)
