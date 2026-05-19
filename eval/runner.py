@@ -10,9 +10,11 @@ from qdrant_client import QdrantClient
 from config import EVAL_DIR, DEFAULT_CORPUS, QDRANT_PATH
 from backend.pipeline import run_pipeline
 
+from config import SIMILARITY_THRESHOLD
+
 CONFIGS: dict[str, dict[str, Any]] = {
-    "baseline":     {"top_k": 5, "threshold": 0.0, "use_reranker": True,  "use_gate": True},
-    "no_reranker":  {"top_k": 5, "threshold": 0.0, "use_reranker": False, "use_gate": True},
+    "baseline":     {"top_k": 5, "threshold": SIMILARITY_THRESHOLD, "use_reranker": True,  "use_gate": True},
+    "no_reranker":  {"top_k": 5, "threshold": SIMILARITY_THRESHOLD, "use_reranker": False, "use_gate": True},
     "no_gate":      {"top_k": 5, "threshold": -1.0, "use_reranker": True, "use_gate": False},
 }
 
