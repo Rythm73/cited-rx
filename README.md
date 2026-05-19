@@ -182,30 +182,52 @@ The gold set (`data/eval/gold.json`) contains 30 questions across four categorie
 
 | Category | Count | Purpose |
 | :--- | :---: | :--- |
-| `factual` | 10 | Single-fact lookups |
-| `multi_hop` | 10 | Answers requiring synthesis across pages |
-| `edge_case` | 5 | Subtle scope and exclusion questions |
-| `out_of_corpus` | 5 | Questions the system should refuse |
+| `factual` | 10 | Single-fact lookups against the CCD guideline |
+| `multi_hop` | 10 | Answers requiring synthesis across multiple pages |
+| `edge_case` | 5 | Subtle scope, exclusion, and boundary questions |
+| `out_of_corpus` | 5 | Questions the system must refuse (e.g. geography, cooking) |
 
-Run the pipeline over the gold set, then score it:
+### Running the eval
 
+**Step 1 — Run the pipeline over the gold set:**
 ```bash
-python -m eval.runner  --config baseline                              # also: no_reranker, no_gate
-python -m eval.metrics --run data/eval/runs/<timestamp>_baseline.json  # Ragas scoring
-python -m eval.calibrate_threshold                                     # tune the similarity gate
+python -m eval.runner --config baseline      # full pipeline
+python -m eval.runner --config no_reranker   # hybrid retrieval only, no cross-encoder
+python -m eval.runner --config no_gate       # refusal disabled
 ```
 
-`runner.py` exposes three configurations so each component can be measured as an ablation: `baseline` (full pipeline), `no_reranker` (hybrid retrieval only), and `no_gate` (refusal disabled).
+**Step 2 — Score with Ragas:**
+```bash
+python -m eval.metrics --run data/eval/runs/<timestamp>_baseline.json
+```
 
-| Configuration | Faithfulness | Context precision | Context recall | Refusal precision |
-| :--- | :---: | :---: | :---: | :---: |
-| `baseline` | – | – | – | – |
-| `no_reranker` | – | – | – | – |
-| `no_gate` | – | – | – | – |
+**Step 3 — Tune the similarity gate (optional):**
+```bash
+python -m eval.calibrate_threshold
+```
+This prints the top semantic cosine score for every gold question and suggests a separation threshold. The current calibrated value is `0.50` (set in `config.py`).
 
-A fast end-to-end sanity check is also available — `python tests/smoke_test.py` runs five real queries and asserts correct answer-vs-refusal behavior, saving a baseline for before/after comparison during refactors.
+### Ablation results
 
----
+Three configurations isolate the contribution of each pipeline component:
+
+| Configuration | What changes | Faithfulness | Context precision | Context recall | Refusal precision |
+| :--- | :--- | :---: | :---: | :---: | :---: |
+| `baseline` | Full pipeline | – | – | – | – |
+| `no_reranker` | Hybrid retrieval only, no cross-encoder rerank | – | – | – | – |
+| `no_gate` | Refusal disabled, all questions answered | – | – | N/A | 0.00 |
+
+> Results will be filled in after scoring completes. Refusal precision for `no_gate` is 0.00 by definition since the gate is disabled.
+
+### Smoke test
+
+A fast end-to-end sanity check runs five real queries (three in-corpus, two out-of-corpus) and asserts correct answer-vs-refusal behavior:
+
+```bash
+python tests/smoke_test.py
+```
+
+Results are saved to `data/eval/smoke_results.json` for before/after comparison during refactors.
 
 ## Testing
 
