@@ -6,12 +6,21 @@ os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 from dotenv import load_dotenv
 from groq import Groq
+from groq import RateLimitError as GroqRateLimitError
 from backend.schemas import Response, RetrievedChunk
-from config import GROQ_MODEL
+from config import GROQ_MODEL, GEMINI_MODEL
 load_dotenv()
 
-print(f"Loading synthesize.py: Groq ({GROQ_MODEL})")
-_client = Groq()
+print(f"Loading synthesize.py: Groq ({GROQ_MODEL}) with Gemini fallback ({GEMINI_MODEL})")
+_groq_client = Groq()
+
+def _get_gemini_client():
+    from langchain_google_genai import ChatGoogleGenerativeAI
+    return ChatGoogleGenerativeAI(
+        model=GEMINI_MODEL,
+        google_api_key=os.getenv("GEMINI_API_KEY"),
+        temperature=0,
+    )
 
 
 SYSTEM_PROMPT = """You are a clinical research assistant. Your job is to answer questions about clinical guidelines using ONLY the chunks of source material provided in the user message.
@@ -44,13 +53,8 @@ def _format_chunks(chunks: list[RetrievedChunk]) -> str:
     )
 
 # ── Synthesis ─────────────────────────────────────────────────
-def synthesize(query: str, chunks: list[RetrievedChunk]) -> Response:
-    user_prompt = (
-        f"Question: {query}\n\n"
-        f"Source chunks:\n{_format_chunks(chunks)}\n\n"
-        f"Answer using only these chunks. Respond with JSON only."
-    )
-    completion = _client.chat.completions.create(
+def _synthesize_with_groq(user_prompt: str) -> dict:
+    completion = _groq_client.chat.completions.create(
         model=GROQ_MODEL,
         messages=[
             {"role": "system", "content": SYSTEM_PROMPT},
@@ -60,7 +64,37 @@ def synthesize(query: str, chunks: list[RetrievedChunk]) -> Response:
         max_tokens=2000,
         response_format={"type": "json_object"},
     )
-    raw = json.loads(completion.choices[0].message.content)
+    return json.loads(completion.choices[0].message.content)
+
+
+def _synthesize_with_gemini(user_prompt: str) -> dict:
+    from langchain_core.messages import HumanMessage, SystemMessage
+    client = _get_gemini_client()
+    messages = [
+        SystemMessage(content=SYSTEM_PROMPT + "\n\nIMPORTANT: Respond with valid JSON only. No markdown, no backticks."),
+        HumanMessage(content=user_prompt),
+    ]
+    response = client.invoke(messages)
+    text = response.content.strip()
+    # Strip markdown fences if Gemini adds them
+    if text.startswith("```"):
+        text = re.sub(r"^```[a-z]*\n?", "", text)
+        text = re.sub(r"\n?```$", "", text)
+    return json.loads(text)
+
+
+def synthesize(query: str, chunks: list[RetrievedChunk]) -> Response:
+    user_prompt = (
+        f"Question: {query}\n\n"
+        f"Source chunks:\n{_format_chunks(chunks)}\n\n"
+        f"Answer using only these chunks. Respond with JSON only."
+    )
+    try:
+        raw = _synthesize_with_groq(user_prompt)
+        print("[synthesize] used Groq")
+    except GroqRateLimitError:
+        print("[synthesize] Groq rate limit hit — falling back to Gemini")
+        raw = _synthesize_with_gemini(user_prompt)
     return Response.model_validate(_coerce_response_input(raw))
 
 # ── Gate ──────────────────────────────────────────────────────

@@ -17,6 +17,7 @@ EVAL_DIR      = Path(os.getenv("CITED_RX_EVAL",      str(DATA_DIR / "eval")))
 LLM_PROVIDER    = os.getenv("LLM_PROVIDER", "groq")
 GROQ_MODEL      = os.getenv("GROQ_MODEL",   "llama-3.3-70b-versatile")
 GROQ_EVAL_MODEL  = os.getenv("GROQ_EVAL_MODEL", "llama3-8b-8192")
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
 
 # ── Retrieval / ingestion constants ────────────────────────────────────
 DEFAULT_CORPUS = "cited_rx_chunks"
