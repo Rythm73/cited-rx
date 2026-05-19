@@ -297,4 +297,4 @@ Fixed constants in `config.py`: chunk size `1000` / overlap `200`, embedding dim
 
 ## License
 
-No license file is currently included. Add a `LICENSE` (for example, MIT) to make the terms of reuse explicit. Note that the bundled clinical guideline is a third-party document — review its terms before redistributing the PDF itself.
+MIT
