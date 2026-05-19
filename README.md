@@ -61,7 +61,7 @@ flowchart TD
 | Embeddings | BGE-M3, 1024-d, via `sentence-transformers` |
 | Reranking | `cross-encoder/ms-marco-MiniLM-L-12-v2` |
 | Keyword retrieval | `rank-bm25` (Okapi BM25) |
-| LLM | Groq — Llama-3.3-70B (synthesis), Llama-3-8B (eval judge) |
+| LLM | Groq — Llama-3.3-70B (synthesis), Llama-3-8B (eval judge); Gemini 2.5 Flash (fallback) |
 | Chunking | LangChain `RecursiveCharacterTextSplitter` |
 | PDF parsing | `pypdf` |
 | Evaluation | Ragas |
@@ -75,8 +75,10 @@ flowchart TD
 ### Prerequisites
 
 - **Python 3.10+**
-- A **Groq API key** (a free tier is available at [console.groq.com](https://console.groq.com))
+- A **Groq API key** (free tier available at [console.groq.com](https://console.groq.com)) — used for synthesis and eval scoring
+- A **Gemini API key** (free tier available at [aistudio.google.com](https://aistudio.google.com/apikey)) — optional, used as automatic fallback when Groq's daily token limit is reached
 - Roughly **2–3 GB of disk** for the embedding and reranker models, which download on first run. A GPU is optional — everything runs on CPU.
+
 
 ### Installation
 
@@ -96,6 +98,7 @@ Create a `.env` file in the project root:
 
 ```env
 GROQ_API_KEY=your_groq_api_key_here
+GEMINI_API_KEY=your_gemini_api_key_here
 ```
 
 All other settings have sensible defaults — see the [configuration reference](#configuration-reference) to override models or data paths.
@@ -192,7 +195,7 @@ python -m eval.metrics --run data/eval/runs/<timestamp>_baseline.json  # Ragas s
 python -m eval.calibrate_threshold                                     # tune the similarity gate
 ```
 
-`runner.py` exposes three configurations so each component can be measured as an ablation: `baseline` (full pipeline), `no_reranker` (hybrid retrieval only), and `no_gate` (refusal disabled). Results — fill in from your latest run:
+`runner.py` exposes three configurations so each component can be measured as an ablation: `baseline` (full pipeline), `no_reranker` (hybrid retrieval only), and `no_gate` (refusal disabled).
 
 | Configuration | Faithfulness | Context precision | Context recall | Refusal precision |
 | :--- | :---: | :---: | :---: | :---: |
@@ -280,6 +283,8 @@ All settings are read by `config.py` and can be overridden with environment vari
 | `CITED_RX_PROCESSED` | `./data/processed` | Chunk & embedding cache |
 | `CITED_RX_RAW` | `./data/raw` | Source PDFs |
 | `CITED_RX_EVAL` | `./data/eval` | Evaluation artifacts |
+| `GEMINI_API_KEY` | *(optional)* | Gemini API key — used as fallback when Groq is rate-limited |
+| `GEMINI_MODEL` | `gemini-2.5-flash` | Gemini model for fallback synthesis |
 
 Fixed constants in `config.py`: chunk size `1000` / overlap `200`, embedding dimension `1024`, RRF constant `60`, and similarity threshold `0.50`.
 
