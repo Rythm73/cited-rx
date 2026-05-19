@@ -1,6 +1,6 @@
 # cited-rx
 
-**Citation-grounded RAG for clinical guidelines — every answer is traceable to a page, and the system refuses to answer when the source material doesn't support it.**
+**Citation-grounded RAG for guidelines — every answer is traceable to a page, and the system refuses to answer when the source material doesn't support it.**
 
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
 ![FastAPI](https://img.shields.io/badge/API-FastAPI-009688)
